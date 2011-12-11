@@ -17,7 +17,6 @@ sub main{
         'schema' => [
             {
                 'name' => 'title', 
-                'boost' => 3,
             },{
                 'name' => 'description',
             },{

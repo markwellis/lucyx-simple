@@ -89,10 +89,44 @@ sub _mk_accessor{
     }
 }
 
+sub indexer{
+    my ( $self ) = @_;
+
+    if ( !defined( $self->{'indexer'} ) ){
+        my $schema = Lucy::Plan::Schema->new;
+       
+#make this in _setup
+        my $types = {
+            'text' => Lucy::Plan::FullTextType->new(
+                'analyzer' => $self->analyser,
+            )
+        };
+
+        foreach my $spec ( @{$self->schema} ){
+            $spec->{'type'} = $types->{'text'};
+            $schema->spec_field( %{$spec} );
+        }
+        
+        # Create the index and add documents.
+        $self->{'indexer'} = Lucy::Index::Indexer->new(
+            schema => $schema,   
+            index  => $self->index_path,
+            create => ( -f $self->index_path . '/segments' ) ? 0 : 1,
+        );
+    }
+
+    return $self->{'indexer'};
+}
+
 sub search{
 }
 
 sub create{
+    my ( $self, $document ) = @_;
+
+    Exception::Simple->throw('no document') if ( !$document );
+
+    $self->indexer->add_doc( $document );
 }
 
 sub update_or_create{

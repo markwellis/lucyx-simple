@@ -1,13 +1,18 @@
 use inc::Module::Install;
   
-  # Define metadata
 name           'LucyX-Simple';
 all_from       'lib/LucyX/Simple.pm';
-  
-# Specific dependencies
-requires       'Data::Page';
-requires       'Lucy';
+
+requires 'Moose';
+requires 'Moose::Util::TypeConstraints';
+requires 'namespace::autoclean';
+requires 'Lucy';
+requires 'Data::Page';
+requires 'Exception::Simple';
+
 test_requires 'Test::More';
+test_requires 'Test::Exception';
+test_requires 'Lucy::Store::RAMFolder';
 
 auto_install;
 WriteAll;

@@ -2,21 +2,20 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Exception;
 use LucyX::Simple;
-use Data::Dumper;
-use File::Temp;
+use Lucy::Store::RAMFolder;
 
-#run main
-main();
+#create test
+#sort mid page test
 
-sub main{
-    my $tempdir = File::Temp::tempdir( 'CLEANUP' => 1 );
-
+die 'do above';
+{
     my $searcher = new_ok('LucyX::Simple' => [{
-        'index_path' => $tempdir,
+        'index_path' => Lucy::Store::RAMFolder->new,
         'schema' => [
             {
-                'name' => 'title', 
+                'name' => 'title',
             },{
                 'name' => 'description',
             },{
@@ -31,7 +30,39 @@ sub main{
         'search_boolop' => 'AND',
     }]);
 
-    index_test_data($searcher);
+    $searcher->create({
+        'id' => 1,
+        'type' => 'link',
+        'title' => 'title filled with bacon',
+        'description' => 'pork free description',
+        'nsfw' => 'N',
+    });
+
+    $searcher->create({
+        'id' => 2,
+        'type' => 'link',
+        'title' => 'title for link 2',
+        'description' => 'i likes bacon',
+        'nsfw' => 'N',
+    });
+
+    $searcher->create({
+        'id' => 3,
+        'type' => 'blog',
+        'title' => 'this is a title',
+        'description' => 'omg this is awesome check it out yo!',
+        'nsfw' => 'N',
+    });
+
+    $searcher->create({
+        'id' => 4,
+        'type' => 'picture',
+        'title' => 'pciture <-wrong not a link or a bg',
+        'description' => 'mighty baconation',
+        'nsfw' => 'N',
+    });
+
+    $searcher->commit;
 
     {
         my ( $objects, $pager ) = $searcher->search('title:bacon', 1);
@@ -68,12 +99,10 @@ sub main{
 
     {
         my ( $object, $pager ) = $searcher->search( 'id:1' );
-        ok($object, 'search reults');
+        ok($object, 'search results');
         is( scalar(@{$object}), 1, '1 result');
         isa_ok($object->[0], 'LucyX::Simple::Result::Object');
-
-        my ( $not_indexed ) = $searcher->search( 'id:9999' );
-        is( $not_indexed, undef, " object id:9999 doesn't exist");
+        throws_ok( sub{ $searcher->search( 'id:9999' ) }, qr/no results/, "object id:9999 doesn't exist");
     }
 
     {
@@ -83,8 +112,7 @@ sub main{
 
         $searcher->delete( 'id' => 1);
         $searcher->commit;
-        $object = $searcher->search( 'id:1' );
-        is( $object, undef, "object id:1 doesn't exist (deleted)");
+        throws_ok( sub{ $searcher->search( 'id:1' ) }, qr/no results/, "object id:1 doesn't exist (deleted)");
     }
 
     {
@@ -141,52 +169,12 @@ sub main{
         is( scalar(@{$object}), 1, '1 result');
         isa_ok($object->[0], 'HASH');
     }
-
 }
 
-sub index_test_data{
-    my ( $searcher ) = @_;
-
-    $searcher->create({
-        'id' => 1,
-        'type' => 'link',
-        'title' => 'title filled with bacon',
-        'description' => 'pork free description',
-        'nsfw' => 'N',
-    });
-
-    $searcher->create({
-        'id' => 2,
-        'type' => 'link',
-        'title' => 'title for link 2',
-        'description' => 'i likes bacon',
-        'nsfw' => 'N',
-    });
-
-    $searcher->create({
-        'id' => 3,
-        'type' => 'blog',
-        'title' => 'this is a title',
-        'description' => 'omg this is awesome check it out yo!',
-        'nsfw' => 'N',
-    });
-
-    $searcher->create({
-        'id' => 4,
-        'type' => 'picture',
-        'title' => 'pciture <-wrong not a link or a bg',
-        'description' => 'mighty baconation',
-        'nsfw' => 'N',
-    });
-
-    $searcher->commit;
-}
 
 {
-    my $tempdir = File::Temp::tempdir( 'CLEANUP' => 1 );
-
     my $searcher = new_ok('LucyX::Simple' => [{
-        'index_path' => $tempdir,
+        'index_path' => Lucy::Store::RAMFolder->new,
         'schema' => [
             {
                 'name' => 'title', 
@@ -234,8 +222,7 @@ sub index_test_data{
     }
 
     {
-        my ( $objects, $pager ) = $searcher->search( 'foobar' );
-        is( $objects, undef, 'no objects returned' );
+        throws_ok( sub{ $searcher->search( 'foobar' ) }, qr/no results/, "no objects returned");
     }
 
     {
@@ -247,10 +234,8 @@ sub index_test_data{
 }
 
 {
-    my $tempdir = File::Temp::tempdir( 'CLEANUP' => 1 );
-
     my $searcher = new_ok('LucyX::Simple' => [{
-        'index_path' => $tempdir,
+        'index_path' => Lucy::Store::RAMFolder->new,
         'schema' => [
             {
                 'name' => 'title', 
@@ -282,6 +267,57 @@ sub index_test_data{
         isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
         is($objects->[0]->title, 'foobar100', 'update or create test');
     }
+}
+
+{
+    my $searcher = new_ok('LucyX::Simple' => [{
+        'index_path' => Lucy::Store::RAMFolder->new,
+        'schema' => [
+            {
+                'name' => 'id',
+                'type' => 'string',
+            },{
+                'name' => 'title',
+            },{
+                'name' => 'sort',
+                'type' => 'int32',
+                'sortable' => 1,
+                'indexed' => 0,
+            },
+        ],
+        'search_fields' => ['title'],
+        'search_boolop' => 'AND',
+    }]);
+
+    for my $i ( 1..100 ){
+        $searcher->create({
+            'id' => $i,
+            'title' => 'foobar ' . $i,
+            'sort' => 100 + $i,
+        });
+    }
+    $searcher->commit;
+
+    my ( $objects, $pager ) = $searcher->search( 'id:1' );
+    is( scalar(@{$objects}), 1, 'only 1 object returned' );
+
+#normal sort
+    my ( $objects, $pager ) = $searcher->sorted_search( 'foobar', {'sort' => 0} );
+    is( scalar(@{$objects}), 100, '100 objects returned' );
+
+    ok($objects, 'objects returned');
+    isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
+    is($objects->[0]->id, '1', 'lowest first');
+    is($objects->[-1]->id, '100', 'highest last');
+
+#reverse sort
+    my ( $objects, $pager ) = $searcher->sorted_search( 'foobar', {'sort' => 1} );
+    is( scalar(@{$objects}), 100, '100 objects returned' );
+
+    ok($objects, 'objects returned');
+    isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
+    is($objects->[0]->id, '100', 'highest first');
+    is($objects->[-1]->id, '1', 'lowest last');
 }
 
 done_testing();

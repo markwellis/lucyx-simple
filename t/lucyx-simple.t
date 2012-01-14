@@ -6,10 +6,6 @@ use Test::Exception;
 use LucyX::Simple;
 use Lucy::Store::RAMFolder;
 
-#create test
-#sort mid page test
-
-die 'do above';
 {
     my $searcher = new_ok('LucyX::Simple' => [{
         'index_path' => Lucy::Store::RAMFolder->new,
@@ -287,6 +283,7 @@ die 'do above';
         ],
         'search_fields' => ['title'],
         'search_boolop' => 'AND',
+        'entries_per_page' => 10,
     }]);
 
     for my $i ( 1..100 ){
@@ -298,26 +295,46 @@ die 'do above';
     }
     $searcher->commit;
 
-    my ( $objects, $pager ) = $searcher->search( 'id:1' );
-    is( scalar(@{$objects}), 1, 'only 1 object returned' );
+    {
+        my ( $objects, $pager ) = $searcher->search( 'id:1' );
+        is( scalar(@{$objects}), 1, 'only 1 object returned' );
+    }
 
+    {
 #normal sort
-    my ( $objects, $pager ) = $searcher->sorted_search( 'foobar', {'sort' => 0} );
-    is( scalar(@{$objects}), 100, '100 objects returned' );
+        my ( $objects, $pager ) = $searcher->sorted_search( 'foobar', {'sort' => 0} );
+        is( scalar(@{$objects}), 10, '10 objects returned' );
 
-    ok($objects, 'objects returned');
-    isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
-    is($objects->[0]->id, '1', 'lowest first');
-    is($objects->[-1]->id, '100', 'highest last');
+        ok($objects, 'objects returned');
+        isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
+        is($objects->[0]->id, '1', 'lowest first');
+        is($objects->[-1]->id, '10', 'highest last');
 
+        ( $objects, $pager ) = $searcher->sorted_search( 'foobar', {'sort' => 0}, 4 );
+        is( scalar(@{$objects}), 10, '10 objects returned' );
+        isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
+        is($objects->[0]->id, '31', 'lowest first');
+        is($objects->[-1]->id, '40', 'highest last');
+    }
+
+    {
 #reverse sort
-    my ( $objects, $pager ) = $searcher->sorted_search( 'foobar', {'sort' => 1} );
-    is( scalar(@{$objects}), 100, '100 objects returned' );
+        my ( $objects, $pager ) = $searcher->sorted_search( 'foobar', {'sort' => 1} );
+        is( scalar(@{$objects}), 10, '10 objects returned' );
 
-    ok($objects, 'objects returned');
-    isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
-    is($objects->[0]->id, '100', 'highest first');
-    is($objects->[-1]->id, '1', 'lowest last');
+        ok($objects, 'objects returned');
+        isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
+        is($objects->[0]->id, '100', 'highest first');
+        is($objects->[-1]->id, '91', 'lowest last');
+        
+        ( $objects, $pager ) = $searcher->sorted_search( 'foobar', {'sort' => 1}, 4 );
+        is( scalar(@{$objects}), 10, '10 objects returned' );
+
+        ok($objects, 'objects returned');
+        isa_ok($objects->[0], 'LucyX::Simple::Result::Object');
+        is($objects->[0]->id, '70', 'highest first');
+        is($objects->[-1]->id, '61', 'lowest last');
+    }
 }
 
 done_testing();

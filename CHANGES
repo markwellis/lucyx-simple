@@ -1,2 +1,4 @@
+0.002
+    Will now always try and create search index dir if doesn't exist
 0.001
     First release

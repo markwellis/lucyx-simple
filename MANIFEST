@@ -15,5 +15,6 @@ lib/LucyX/Simple.pod
 lib/LucyX/Simple/Result/Hash.pm
 lib/LucyX/Simple/Result/Object.pm
 Makefile.PL
+META.yml
 MANIFEST			This list of files
 t/lucyx-simple.t

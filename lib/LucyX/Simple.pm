@@ -114,7 +114,7 @@ sub _build__indexer{
     return Lucy::Index::Indexer->new(
         schema => $self->_index_schema,   
         index  => $self->_index_path,
-        create => ( -f $self->_index_path . '/schema_1.json' ) ? 0 : 1,
+        create => 1,
     );
 }
 

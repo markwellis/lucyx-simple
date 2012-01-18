@@ -337,6 +337,87 @@ use Lucy::Store::RAMFolder;
     }
 }
 
+{
+    my $searcher = new_ok('LucyX::Simple' => [{
+        'index_path' => Lucy::Store::RAMFolder->new,
+        'schema' => [
+            {
+                'name' => 'type',
+                'type' => 'string',
+            },{
+                'name' => 'title',
+            },
+        ],
+        'search_fields' => ['type'],
+        'search_boolop' => 'AND',
+        'entries_per_page' => 100,
+    }]);
+
+    foreach my $letter ('a' .. 'z') {
+        $searcher->create( {
+            title => $letter,
+            type => 'link',
+        } );
+        
+        $searcher->create( {
+            title => $letter,
+            type => 'picture',
+        } );
+        
+        $searcher->create( {
+            title => $letter,
+            type => 'cats',
+        } );
+        
+        $searcher->create( {
+            title => $letter,
+            type => 'sheep',
+        } );
+        
+        $searcher->create( {
+            title => $letter,
+            type => 'door',
+        } );
+        
+        $searcher->create( {
+            title => $letter,
+            type => 'doors',
+        } );
+    }
+
+    $searcher->commit;
+
+    {
+        my ( $objects, $pager ) = $searcher->search('type:link');
+        is( $pager->total_entries, 26, '26 results for type:link' );
+    }
+    
+    {
+        my ( $objects, $pager ) = $searcher->search('type:picture');
+        is( $pager->total_entries, 26, '26 results for type:picture' );
+    }
+    
+    {
+        my ( $objects, $pager ) = $searcher->search('type:cats');
+        is( $pager->total_entries, 26, '26 results for type:cats' );
+    }
+    
+    {
+        my ( $objects, $pager ) = $searcher->search('type:sheep');
+        is( $pager->total_entries, 26, '26 results for type:sheep' );
+    }
+    
+    {
+        my ( $objects, $pager ) = $searcher->search('type:door');
+        is( $pager->total_entries, 26, '26 results for type:door' );
+    }
+
+    {
+        my ( $objects, $pager ) = $searcher->search('type:doors');
+        is( $pager->total_entries, 26, '26 results for type:doors' );
+    }
+}
+
 done_testing();
 
 package LucyX::Simple::Result::Test;

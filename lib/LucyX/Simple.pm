@@ -1,6 +1,6 @@
 package LucyX::Simple;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 $VERSION = eval $VERSION;
 
 use Moose;
@@ -155,7 +155,6 @@ sub _build__query_parser{
 
     my $query_parser = Lucy::Search::QueryParser->new(
         schema => $self->_searcher->get_schema,
-        analyzer => $self->_analyser,
         fields => $self->search_fields,
         default_boolop => $self->search_boolop,
     );

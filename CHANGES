@@ -1,3 +1,5 @@
+0.004
+    version bump for inc::Module::Install upgrade (http://weblog.bulknews.net/post/33907905561/do-not-ship-modules-with-module-install-1-04)
 0.003
     removed errornous analazyer attribute from QueryParser, added more test cases
 0.002

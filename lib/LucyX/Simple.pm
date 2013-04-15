@@ -1,6 +1,6 @@
 package LucyX::Simple;
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 $VERSION = eval $VERSION;
 
 use Moose;

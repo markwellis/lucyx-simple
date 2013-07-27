@@ -1,21 +1,9 @@
 package LucyX::Simple;
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 $VERSION = eval $VERSION;
 
-use Moose;
-use namespace::autoclean;
-
-use Moose::Util::TypeConstraints;
-
-subtype 'LoadClass' 
-    => as 'ClassName';
-
-coerce 'LoadClass' 
-    => from 'Str'
-    => via { Class::MOP::load_class($_); $_ };
-
-no Moose::Util::TypeConstraints;
+use Moo;
 
 use Lucy::Analysis::PolyAnalyzer;
 use Lucy::Plan::Schema;
@@ -35,7 +23,6 @@ use Exception::Simple;
 
 has _language => (
     'is' => 'ro',
-    'isa' => 'Str',
     'default' => 'en',
     'init_arg' => 'language',
 );
@@ -55,15 +42,12 @@ has _analyser => (
 
 has schema => (
     'is' => 'ro',
-    'isa' => 'ArrayRef[HashRef]',
     'required' => 1,
 );
 
 has '_index_schema' => (
-    'is' => 'ro',
-    'isa' => 'Lucy::Plan::Schema',
+    'is' => 'lazy',
     'init_arg' => undef,
-    'lazy_build' => 1,
 );
 
 sub _build__index_schema{
@@ -102,10 +86,9 @@ sub _build__index_schema{
 }
 
 has _indexer => (
-    'is' => 'ro',
-    'isa' => 'Lucy::Index::Indexer',
+    'is' => 'lazy',
     'init_arg' => undef,
-    'lazy_build' => 1,
+    'clearer' => 1,
 );
 
 sub _build__indexer{
@@ -119,10 +102,9 @@ sub _build__indexer{
 }
 
 has _searcher => (
-    'is' => 'ro',
-    'isa' => 'Lucy::Search::IndexSearcher',
+    'is' => 'lazy',
     'init_arg' => undef,
-    'lazy_build' => 1,
+    'clearer' => 1,
 );
 
 sub _build__searcher{
@@ -133,21 +115,17 @@ sub _build__searcher{
 
 has search_fields => (
     'is' => 'ro',
-    'isa' => 'ArrayRef[Str]',
     'required' => 1,
 );
 
 has search_boolop => (
     'is' => 'ro',
-    'isa' => 'Str',
     'default' => 'OR',
 );
 
 has _query_parser => (
-    'is' => 'ro',
-    'isa' => 'Lucy::Search::QueryParser',
+    'is' => 'lazy',
     'init_arg' => undef,
-    'lazy_build' => 1,
 );
 
 sub _build__query_parser{
@@ -166,15 +144,13 @@ sub _build__query_parser{
 
 has resultclass => (
     'is' => 'rw',
-    'isa' => 'LoadClass',
-    'coerce' => 1,
     'lazy' => 1,
+    'coerce' => sub{my $class = shift; eval "use ${class}"; return $class},
     'default' => 'LucyX::Simple::Result::Object',
 );
 
 has entries_per_page => (
     'is' => 'rw',
-    'isa' => 'Num',
     'lazy' => 1,
     'default' => 100,
 );

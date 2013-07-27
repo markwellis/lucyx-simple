@@ -416,6 +416,11 @@ use Lucy::Store::RAMFolder;
         my ( $objects, $pager ) = $searcher->search('type:doors');
         is( $pager->total_entries, 26, '26 results for type:doors' );
     }
+
+    {
+        my ( $objects, $pager ) = $searcher->search('title:a');
+        is( $pager->total_entries, 6, '6 results for title:a' );
+    }
 }
 
 done_testing();

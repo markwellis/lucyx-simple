@@ -15,6 +15,7 @@ test_requires 'Lucy::Store::RAMFolder';
 perl_version '5.008';
 
 resources(
+    'bugtracker'  => 'https://github.com/n0body-/lucyx-simple/issues',
     'repository'  => 'https://github.com/n0body-/lucyx-simple.git',
 );
 

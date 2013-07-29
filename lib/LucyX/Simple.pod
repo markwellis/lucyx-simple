@@ -154,7 +154,7 @@ default is 100
 
 =head1 SUPPORT
 
-Bugs should always be submitted via the CPAN bug tracker
+Please submit bugs through L<https://github.com/n0body-/lucyx-simple/issues>
 
 For other issues, contact the maintainer
 

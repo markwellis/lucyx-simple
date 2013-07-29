@@ -1,6 +1,6 @@
 package LucyX::Simple;
 
-our $VERSION = '0.008';
+our $VERSION = '0.008001';
 $VERSION = eval $VERSION;
 
 use Moo;

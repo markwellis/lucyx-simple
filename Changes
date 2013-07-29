@@ -1,5 +1,9 @@
 Revision history for perl module LucyX::Simple
 
+0.008 2013-07-29
+    - Reformatted Changes file as per CPAN::Changes::Spec
+    - Changed issue tracker to github
+
 0.007 2013-07-29
     - Fixed defaults
 

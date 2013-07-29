@@ -1,6 +1,6 @@
 package LucyX::Simple;
 
-our $VERSION = '0.006';
+our $VERSION = '0.007';
 $VERSION = eval $VERSION;
 
 use Moo;
@@ -23,7 +23,7 @@ use Exception::Simple;
 
 has _language => (
     'is' => 'ro',
-    'default' => 'en',
+    'default' => sub{ 'en' },
     'init_arg' => 'language',
 );
 
@@ -120,7 +120,7 @@ has search_fields => (
 
 has search_boolop => (
     'is' => 'ro',
-    'default' => 'OR',
+    'default' => sub{ return 'OR' },
 );
 
 has _query_parser => (
@@ -146,13 +146,13 @@ has resultclass => (
     'is' => 'rw',
     'lazy' => 1,
     'coerce' => sub{my $class = shift; eval "use ${class}"; return $class},
-    'default' => 'LucyX::Simple::Result::Object',
+    'default' => sub{ return 'LucyX::Simple::Result::Object' },
 );
 
 has entries_per_page => (
     'is' => 'rw',
     'lazy' => 1,
-    'default' => 100,
+    'default' => sub{ return 100 },
 );
 
 sub sorted_search{

@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/n0body-/lucyx-simple.png)](https://travis-ci.org/n0body-/lucyx-simple)
+[![Coverage Status](https://coveralls.io/repos/n0body-/lucyx-simple/badge.png)](https://coveralls.io/r/n0body-/lucyx-simple)
 
 LucyX::Simple
 =====

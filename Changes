@@ -1,5 +1,8 @@
 Revision history for perl module LucyX::Simple
 
+0.008002 2014-02-22
+    - changed github repo url
+
 0.008001 2013-07-29
     - Added Changes to MANIFEST
 

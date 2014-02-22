@@ -152,15 +152,9 @@ could be changed to LucyX::Simple::Result::Hash for a plain old, hashref or a cu
 
 default is 100
 
-=head1 SUPPORT
-
-Please submit bugs through L<https://github.com/n0body-/lucyx-simple/issues>
-
-For other issues, contact the maintainer
-
 =head1 AUTHORS
 
-n0body E<lt>n0body@thisaintnews.comE<gt>
+Mark Ellis E<lt>markellis@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
@@ -168,7 +162,7 @@ L<http://thisaintnews.com>, L<Lucy>, L<Exception::Simple>
 
 =head1 LICENSE
 
-Copyright (C) 2012 by n0body L<http://thisaintnews.com/>
+Copyright 2014 Mark Ellis E<lt>markellis@cpan.orgE<gt>
 
 This library is free software, you can redistribute it and/or modify
 it under the same terms as Perl itself.
